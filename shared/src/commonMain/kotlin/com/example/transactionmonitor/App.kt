@@ -48,12 +48,23 @@ fun App() {
             }
             is Screen.Dashboard -> {
                 DashboardScreen(
+                    onNavigateToScan = {
+                        backstack.add(Screen.Scan)
+                    },
                     onNavigateToTransactions = {
                         backstack.add(Screen.Transactions)
                     },
-                    onNavigateToTransactionDetails = { txnId ->
-                        selectedTransactionId = txnId
-                        backstack.add(Screen.TransactionDetails)
+                    onNavigateToSendToNfc = {
+                        backstack.add(Screen.SendToNfc)
+                    },
+                    onNavigateToSendMoney = {
+                        backstack.add(Screen.SendMoney)
+                    },
+                    onNavigateToRequestMoney = {
+                        backstack.add(Screen.RequestMoney)
+                    },
+                    onNavigateToBalance = {
+                        backstack.add(Screen.Balance)
                     },
                     onNavigateToNotifications = {
                         backstack.add(Screen.Notifications)

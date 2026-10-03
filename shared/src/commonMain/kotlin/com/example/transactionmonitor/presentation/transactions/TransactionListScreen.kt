@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.transactionmonitor.data.repository.FakeTransactionRepository
 import com.example.transactionmonitor.domain.model.Transaction
@@ -34,7 +35,10 @@ fun TransactionListScreen(
                 title = { Text("Recent Transactions") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Text("←", style = MaterialTheme.typography.titleLarge)
+                        Icon(
+                            imageVector = AppVectorIcons.Back,
+                            contentDescription = "Back"
+                        )
                     }
                 },
                 actions = {
@@ -99,6 +103,14 @@ fun TransactionRowItem(
     val amountColor = if (isIncoming) Color(0xFF2E7D32) else Color(0xFFC62828)
     val amountPrefix = if (isIncoming) "+ " else "- "
 
+    val iconVector: ImageVector = when (transaction.title) {
+        "Sent to NFC" -> AppVectorIcons.SendTransaction
+        "Received from NFC" -> AppVectorIcons.ReceiveTransaction
+        "Paid at Store" -> AppVectorIcons.StorePayment
+        "NFC Top-up" -> AppVectorIcons.NfcTopUp
+        else -> AppVectorIcons.Wallet
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,13 +130,12 @@ fun TransactionRowItem(
                 color = Color(0xFFF1F5F9)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    when (transaction.title) {
-                        "Sent to NFC" -> SendMoneyIcon(modifier = Modifier.size(24.dp), tint = Color(0xFF1976D2))
-                        "Received from NFC" -> ReceiveMoneyIcon(modifier = Modifier.size(24.dp), tint = Color(0xFF1976D2))
-                        "Paid at Store" -> ShoppingCartIcon(modifier = Modifier.size(24.dp), tint = Color(0xFF1976D2))
-                        "NFC Top-up" -> NfcIcon(modifier = Modifier.size(24.dp), tint = Color(0xFF1976D2))
-                        else -> WalletIcon(modifier = Modifier.size(24.dp), tint = Color(0xFF1976D2))
-                    }
+                    Icon(
+                        imageVector = iconVector,
+                        contentDescription = transaction.title,
+                        tint = Color(0xFF1976D2),
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
 

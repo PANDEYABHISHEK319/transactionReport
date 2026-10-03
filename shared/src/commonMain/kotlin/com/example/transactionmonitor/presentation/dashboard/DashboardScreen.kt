@@ -1,153 +1,266 @@
 package com.example.transactionmonitor.presentation.dashboard
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.example.transactionmonitor.data.repository.FakeDashboardRepository
-import com.example.transactionmonitor.domain.repository.DashboardRepository
-import com.example.transactionmonitor.presentation.components.*
+import com.example.transactionmonitor.presentation.components.AppVectorIcons
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
+    onNavigateToScan: () -> Unit,
     onNavigateToTransactions: () -> Unit,
-    onNavigateToTransactionDetails: (String) -> Unit,
+    onNavigateToSendToNfc: () -> Unit,
+    onNavigateToSendMoney: () -> Unit,
+    onNavigateToRequestMoney: () -> Unit,
+    onNavigateToBalance: () -> Unit,
     onNavigateToNotifications: () -> Unit,
-    onMenuClick: () -> Unit,
-    dashboardRepository: DashboardRepository = remember { FakeDashboardRepository() }
+    onMenuClick: () -> Unit
 ) {
-    val viewModel = remember { DashboardViewModel(dashboardRepository) }
-    val uiState by viewModel.uiState.collectAsState()
+    val primaryBlue = Color(0xFF1976D2)
+    val lightContainerColor = Color(0xFFE3F2FD)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Dashboard") },
-                navigationIcon = {
-                    IconButton(onClick = onMenuClick) {
-                        Text("☰", style = MaterialTheme.typography.titleMedium)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onNavigateToNotifications) {
-                        Text("🔔", style = MaterialTheme.typography.titleMedium)
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        // TOP SECTION: Large blue header with rounded bottom corners
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
+                .background(primaryBlue)
+                .padding(24.dp)
         ) {
-            when (val state = uiState) {
-                is DashboardUiState.Loading -> {
-                    LoadingState()
-                }
-                is DashboardUiState.Error -> {
-                    ErrorState(message = state.message, onRetry = { viewModel.loadDashboardSummary() })
-                }
-                is DashboardUiState.Success -> {
-                    val summary = state.summary
-                    LazyColumn(
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Top row: Profile avatar on left, Notification on right
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Profile / avatar icon
+                    Surface(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                            .size(44.dp)
+                            .clickable(onClick = onMenuClick),
+                        shape = CircleShape,
+                        color = Color.White
                     ) {
-                        item {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                OutlinedButton(onClick = { /* Date filter popup */ }) {
-                                    Text("📅 Today ▼")
-                                }
-                            }
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "A",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = primaryBlue
+                            )
                         }
+                    }
 
-                        item {
-                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    SummaryCard(
-                                        title = "Transactions",
-                                        value = summary.totalTransactions.toString(),
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    SummaryCard(
-                                        title = "Total Amount",
-                                        value = "₹${summary.totalAmount.toInt()}",
-                                        modifier = Modifier.weight(1f),
-                                        valueColor = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    SummaryCard(
-                                        title = "Success",
-                                        value = summary.successfulTransactions.toString(),
-                                        modifier = Modifier.weight(1f),
-                                        valueColor = Color(0xFF2E7D32)
-                                    )
-                                    SummaryCard(
-                                        title = "Failed",
-                                        value = summary.failedTransactions.toString(),
-                                        modifier = Modifier.weight(1f),
-                                        valueColor = Color(0xFFC62828)
-                                    )
-                                }
-                            }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        IconButton(onClick = onNavigateToNotifications) {
+                            Icon(
+                                imageVector = AppVectorIcons.Notification,
+                                contentDescription = "Notifications",
+                                tint = Color.White
+                            )
                         }
+                    }
+                }
 
-                        item {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Recent Transactions",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                TextButton(onClick = onNavigateToTransactions) {
-                                    Text("View All")
-                                }
-                            }
-                        }
+                Spacer(modifier = Modifier.height(24.dp))
 
-                        if (summary.recentTransactions.isEmpty()) {
-                            item {
-                                EmptyState(message = "No recent transactions")
-                            }
-                        } else {
-                            items(summary.recentTransactions) { transaction ->
-                                TransactionCard(
-                                    transaction = transaction,
-                                    onClick = { onNavigateToTransactionDetails(transaction.id) }
-                                )
-                            }
-                        }
+                // Center NFC icon
+                Surface(
+                    modifier = Modifier.size(72.dp),
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.2f)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = AppVectorIcons.NfcTransaction,
+                            contentDescription = "NFC",
+                            tint = Color.White,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
 
-                        item {
-                            Spacer(modifier = Modifier.height(24.dp))
-                        }
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "NFC",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Tap to Transfer Money",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // MONEY TRANSFER SECTION
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            Text(
+                text = "Money Transfer",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                TransferActionItem(
+                    icon = AppVectorIcons.ToNfc,
+                    label = "To NFC",
+                    onClick = onNavigateToSendToNfc
+                )
+                TransferActionItem(
+                    icon = AppVectorIcons.SendMoney,
+                    label = "Send\nMoney",
+                    onClick = onNavigateToSendMoney
+                )
+                TransferActionItem(
+                    icon = AppVectorIcons.RequestMoney,
+                    label = "Request\nMoney",
+                    onClick = onNavigateToRequestMoney
+                )
+                TransferActionItem(
+                    icon = AppVectorIcons.Wallet,
+                    label = "Check\nBalance",
+                    onClick = onNavigateToBalance
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // BOTTOM ACTION AREA
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                .background(lightContainerColor)
+                .padding(24.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(
+                    onClick = onNavigateToScan,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryBlue)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = AppVectorIcons.Scan,
+                            contentDescription = "Scan",
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Text(
+                            text = "Scan",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = onNavigateToTransactions,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = AppVectorIcons.History,
+                            contentDescription = "History",
+                            tint = primaryBlue,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Text(
+                            text = "History",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = primaryBlue
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TransferActionItem(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick)
+    ) {
+        Surface(
+            modifier = Modifier.size(56.dp),
+            shape = CircleShape,
+            color = Color(0xFFF1F5F9)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    tint = Color(0xFF1976D2),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            maxLines = 2
+        )
     }
 }

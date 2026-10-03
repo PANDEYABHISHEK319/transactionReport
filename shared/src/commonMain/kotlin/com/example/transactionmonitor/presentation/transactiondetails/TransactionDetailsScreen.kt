@@ -30,7 +30,10 @@ fun TransactionDetailsScreen(
                 title = { Text("Transaction Details") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Text("←", style = MaterialTheme.typography.titleLarge)
+                        Icon(
+                            imageVector = AppVectorIcons.Back,
+                            contentDescription = "Back"
+                        )
                     }
                 }
             )

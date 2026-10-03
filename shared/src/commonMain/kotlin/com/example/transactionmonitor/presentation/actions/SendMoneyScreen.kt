@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.transactionmonitor.presentation.components.AppVectorIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -18,8 +19,10 @@ fun SendMoneyScreen(
                 title = { Text("Send Money") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Text("←", style = MaterialTheme.typography.titleLarge)
-                    }
+                        Icon(
+                            imageVector = AppVectorIcons.Back,
+                            contentDescription = "Back"
+                        )                    }
                 }
             )
         }

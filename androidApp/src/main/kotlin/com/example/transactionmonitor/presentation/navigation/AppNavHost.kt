@@ -5,6 +5,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.transactionmonitor.data.repository.FakeAuthRepository
+import com.example.transactionmonitor.presentation.actions.BalanceScreen
+import com.example.transactionmonitor.presentation.actions.RequestMoneyScreen
+import com.example.transactionmonitor.presentation.actions.ScanScreen
+import com.example.transactionmonitor.presentation.actions.SendMoneyScreen
+import com.example.transactionmonitor.presentation.actions.SendToNfcScreen
 import com.example.transactionmonitor.presentation.dashboard.DashboardScreen
 import com.example.transactionmonitor.presentation.device.DeviceStatusScreen
 import com.example.transactionmonitor.presentation.login.LoginScreen
@@ -50,11 +55,23 @@ fun AppNavHost() {
         }
         composable(Screen.Dashboard.route) {
             DashboardScreen(
+                onNavigateToScan = {
+                    navController.navigate(Screen.Scan.route)
+                },
                 onNavigateToTransactions = {
                     navController.navigate(Screen.Transactions.route)
                 },
-                onNavigateToTransactionDetails = { txnId ->
-                    navController.navigate(Screen.TransactionDetails.createRoute(txnId))
+                onNavigateToSendToNfc = {
+                    navController.navigate(Screen.SendToNfc.route)
+                },
+                onNavigateToSendMoney = {
+                    navController.navigate(Screen.SendMoney.route)
+                },
+                onNavigateToRequestMoney = {
+                    navController.navigate(Screen.RequestMoney.route)
+                },
+                onNavigateToBalance = {
+                    navController.navigate(Screen.Balance.route)
                 },
                 onNavigateToNotifications = {
                     navController.navigate(Screen.Notifications.route)
@@ -78,6 +95,41 @@ fun AppNavHost() {
             val txnId = backStackEntry.arguments?.getString("transactionId") ?: ""
             TransactionDetailsScreen(
                 transactionId = txnId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Scan.route) {
+            ScanScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.SendToNfc.route) {
+            SendToNfcScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.SendMoney.route) {
+            SendMoneyScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.RequestMoney.route) {
+            RequestMoneyScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Balance.route) {
+            BalanceScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
