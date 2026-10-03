@@ -42,7 +42,7 @@ fun TransactionListScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = { /* View All action */ }) {
+                    TextButton(onClick = { viewModel.loadTransactions() }) {
                         Text(
                             text = "View All >",
                             color = Color(0xFF1976D2),
